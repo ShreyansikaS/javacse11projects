@@ -10,13 +10,6 @@ Every room was different in size, some rooms were shared, and the rent wasn’t 
 
 It’s simple, transparent, and built for real-life situations.
 
----
-
-## cd path/to/SmartRentSplitter
-git init
-git add .
-git commit -m "Initial commit: Add SmartRentSplitter Java project"What It Does
-
 RentSplitter takes in:
 - Total rent amount
 - Number of rooms + square footage
