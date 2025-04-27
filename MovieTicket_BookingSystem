@@ -1,1 +1,139 @@
+import java.util.*;
+
+public class MovieTicketBookingSystem {
+    
+    // Class representing a booking
+    static class Booking {
+        String customerName;
+        String movieName;
+        int numTickets;
+
+        // Constructor
+        Booking(String customerName, String movieName, int numTickets) {
+            this.customerName = customerName;
+            this.movieName = movieName;
+            this.numTickets = numTickets;
+        }
+    }
+    
+    static final int MAX_TICKETS = 50; // Maximum seats per show
+    static String[] movies = {"Movie A - 10:00 AM", "Movie B - 12:00 PM", "Movie C - 02:00 PM", "Movie D - 04:00 PM", "Movie E - 06:00 PM"};
+    static int[] availableSeats = {MAX_TICKETS, 0, MAX_TICKETS, 0, MAX_TICKETS}; // 0 indicates that the show is full
+    static List<Booking> bookings = new ArrayList<>();
+    
+    // Method to display available shows
+    public static void displayAvailableShows() {
+        System.out.println("\nAvailable Shows (Movie - Time):");
+        for (int i = 0; i < movies.length; i++) {
+            if (availableSeats[i] > 0) {
+                System.out.println(movies[i] + " - Available Seats: " + availableSeats[i]);
+            } else {
+                System.out.println(movies[i] + " - SOLD OUT");
+            }
+        }
+    }
+
+    // Method to add a booking
+    public static void addBooking(String customerName, String movieName, int numTickets) {
+        int movieIndex = findMovieIndex(movieName);
+        if (movieIndex == -1) {
+            System.out.println("Error: Movie not available. Please choose a valid movie.");
+            return;
+        }
+
+        if (availableSeats[movieIndex] == 0) {
+            System.out.println("Error: The show is sold out. Please choose another show.");
+            return;
+        }
+
+        if (availableSeats[movieIndex] < numTickets) {
+            System.out.println("Error: Not enough seats available. Please choose fewer tickets.");
+            return;
+        }
+
+        // Create a new booking
+        Booking newBooking = new Booking(customerName, movieName, numTickets);
+        bookings.add(newBooking);
+
+        // Decrease the number of available seats for the chosen show
+        availableSeats[movieIndex] -= numTickets;
+        System.out.println("Booking successful! You have booked " + numTickets + " tickets for " + movieName + ".");
+    }
+
+    // Method to find the index of a movie in the movies array
+    public static int findMovieIndex(String movieName) {
+        for (int i = 0; i < movies.length; i++) {
+            if (movies[i].equalsIgnoreCase(movieName)) {
+                return i;
+            }
+        }
+        return -1; // Movie not found
+    }
+
+    // Method to remove a booking
+    public static void removeBooking(String customerName) {
+        Iterator<Booking> iterator = bookings.iterator();
+        while (iterator.hasNext()) {
+            Booking booking = iterator.next();
+            if (booking.customerName.equalsIgnoreCase(customerName)) {
+                int movieIndex = findMovieIndex(booking.movieName);
+                availableSeats[movieIndex] += booking.numTickets;
+                iterator.remove();
+                System.out.println("Booking removed successfully! " + booking.numTickets + " tickets have been refunded.");
+                return;
+            }
+        }
+        System.out.println("Error: Booking not found! Please check the customer name and try again.");
+    }
+
+    // Method to display all bookings
+    public static void displayBookings() {
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings available.");
+            return;
+        }
+        for (Booking booking : bookings) {
+            System.out.println("Customer: " + booking.customerName + ", Movie: " + booking.movieName + ", Tickets: " + booking.numTickets);
+        }
+    }
+
+    // Main method to interact with the system
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            displayAvailableShows();
+
+            System.out.println("\n1. Add Booking\n2. Remove Booking\n3. Display Bookings\n4. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter customer name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter movie name: ");
+                    String movie = scanner.nextLine();
+                    System.out.print("Enter number of tickets: ");
+                    int tickets = scanner.nextInt();
+                    addBooking(name, movie, tickets);
+                    break;
+                case 2:
+                    System.out.print("Enter customer name to remove booking: ");
+                    name = scanner.nextLine();
+                    removeBooking(name);
+                    break;
+                case 3:
+                    displayBookings();
+                    break;
+                case 4:
+                    System.out.println("Exiting system...");
+                    return;
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+        }
+    }
+}
 
